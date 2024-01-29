@@ -1,0 +1,54 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: argocd-server-ingress
+  namespace: argocd
+  annotations:
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    # In order to expose the Argo CD API server with a single ingress rule and hostname,
+    # the nginx.ingress.kubernetes.io/ssl-passthrough annotation must be used to
+    # passthrough TLS connections and terminate TLS at the Argo CD API server.
+    # This rule terminates TLS at the Argo CD API server, which detects the protocol being used (HTTPS or gRPC), and responds appropriately.
+    # This annotation REQUIRES that the --enable-ssl-passthrough flag be added to the command line arguments to nginx-ingress-controller
+    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+    # Using with Cert-Manager and Letsencrypt...
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    # cert-manager.io/acme-challenge-type: http01
+    # nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
+    # nginx.ingress.kubernetes.io/proxy-body-size: 16m
+    # ---- SOS ---
+    # If you encounter a redirect loop or are getting a 307 response code
+    # then you need to force the nginx ingress to connect to the backend using HTTPS.
+    #
+    # nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: argocd.gabtec.pt
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: argocd-server
+                port:
+                  name: https
+  tls:
+    - hosts:
+        - argocd.gabtec.pt
+      secretName: argocd-server-tls # as expected by argocd-server
+      # this secrets must have: data.tls.crt, and data.tls.key
+#
+# xgeeks kluster kind: ClusterIssuer -- spec.acme.privateKeySecretRef.name = letsencrypt
+#
+# example
+# apiVersion: v1
+# kind: Secret
+# metadata:
+#   name: testsecret-tls
+#   namespace: default
+# data:
+#   tls.crt: base64 encoded cert
+#   tls.key: base64 encoded key
+# type: kubernetes.io/tls

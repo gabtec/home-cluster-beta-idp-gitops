@@ -1,0 +1,40 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  labels:
+    app.kubernetes.io/managed-by: argocd
+    app.kubernetes.io/name: tools
+  name: tools-root
+  namespace: argocd
+spec:
+  destination:
+    namespace: argocd
+    server: https://kubernetes.default.svc
+  project: tools
+  source:
+    repoURL: "https://github.com/gabtec/home-cluster-beta-idp-gitops.git"
+    path: tools/**/
+  syncPolicy:
+    automated:
+      allowEmpty: true
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - allowEmpty=true
+#   #
+#   ignoreDifferences:
+#     - group: argoproj.io
+#       jsonPointers:
+#         - /status
+#       kind: Application
+# status:
+#   health: {}
+#   summary: {}
+#   sync:
+#     comparedTo:
+#       destination: {}
+#       source:
+#         repoURL: ""
+#     status: ""

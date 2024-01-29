@@ -1,0 +1,39 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: geekathon-apps-root
+  namespace: argocd
+  labels:
+    xgeeks.project: geekathon2023
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: "https://github.com/gabtec/home-cluster-beta-idp-gitops.git"
+    path: apps
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: true
+    syncOptions:
+      - allowEmpty=true
+#   #
+#   ignoreDifferences:
+#     - group: argoproj.io
+#       jsonPointers:
+#         - /status
+#       kind: Application
+# status:
+#   health: {}
+#   summary: {}
+#   sync:
+#     comparedTo:
+#       destination: {}
+#       source:
+#         repoURL: ""
+#     status: ""

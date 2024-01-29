@@ -1,0 +1,86 @@
+# ##################################################### #
+#   create Cluster namespaces here
+#   and
+#   for each namespace, create a ghcr.io access secret
+#   (we use ESO to get it from AKV)
+# ##################################################### #
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-options: Prune=false # to avoid a project to delete a ns containing other projects
+  name: idp-dev
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-options: Prune=false # to avoid a project to delete a ns containing other projects
+  name: idp-prod
+# ---
+# apiVersion: v1
+# kind: Namespace
+# metadata:
+#   annotations:
+#     argocd.argoproj.io/sync-options: Prune=false # to avoid a project to delete a ns containing other projects
+#   name: idp-dev
+
+# # ##################################################### #
+# #   ghcr.io secret per namespace, using ESO
+# # ##################################################### #
+# ---
+# apiVersion: external-secrets.io/v1beta1
+# kind: ExternalSecret
+# metadata:
+#   name: ghcr-io-external-secret
+#   namespace: idp-dev # <==== set dest NS here
+#   finalizers:
+#     - resources-finalizer.argocd.argoproj.io
+# spec:
+#   refreshInterval: 1m
+#   secretStoreRef:
+#     kind: ClusterSecretStore
+#     name: eso-azure-secret-store
+#   # target = describes the secret that shall be created
+#   target: # is the kind: Secret to be created using the values fetched from our Cloud Secret Store
+#     name: regcred-ghcr-io-secret # secret name to be created (default is metadata.name)
+#   #   creationPolicy: Owner # opts: Owner | Merge | None
+#   #   deletionPolicy: Retain # opts: Delete | Merge | Retain = what to do with this if the provider secret gets deleted.
+#   # #
+#   # from where to fetch data...
+#   data: # when I know the secret key name to ref
+#     - remoteRef: # key inside cloud secret store, to read from
+#         key: GHCR-IO-CREDS
+#       secretKey: .dockerconfigjson
+# ---
+# apiVersion: v1
+# kind: Namespace
+# metadata:
+#   annotations:
+#     argocd.argoproj.io/sync-options: Prune=false # to avoid a project to delete a ns containing other projects
+#   name: idp-prod
+# ---
+# apiVersion: external-secrets.io/v1beta1
+# kind: ExternalSecret
+# metadata:
+#   name: ghcr-io-external-secret
+#   namespace: idp-prod # <==== set dest NS here
+#   finalizers:
+#     - resources-finalizer.argocd.argoproj.io
+# spec:
+#   refreshInterval: 1m
+#   secretStoreRef:
+#     kind: ClusterSecretStore
+#     name: eso-azure-secret-store
+#   # target = describes the secret that shall be created
+#   target: # is the kind: Secret to be created using the values fetched from our Cloud Secret Store
+#     name: regcred-ghcr-io-secret # secret name to be created (default is metadata.name)
+#   #   creationPolicy: Owner # opts: Owner | Merge | None
+#   #   deletionPolicy: Retain # opts: Delete | Merge | Retain = what to do with this if the provider secret gets deleted.
+#   # #
+#   # from where to fetch data...
+#   data: # when I know the secret key name to ref
+#     - remoteRef: # key inside cloud secret store, to read from
+#         key: GHCR-IO-CREDS
+#       secretKey: .dockerconfigjson

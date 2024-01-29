@@ -1,0 +1,54 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cert-manager-tool
+  namespace: argocd
+  labels:
+    group: tools
+  annotations:
+    argocd.argoproj.io/sync-options: Prune=false
+spec:
+  project: tools
+  # desired state at Git
+  source:
+    repoURL: https://charts.jetstack.io
+    chart: jetstack/cert-manager
+    targetRevision: 1.13.2 # chartVersion=appVersion
+    helm:
+      releaseName: cert-manager
+      valuesObject:
+        namespace: cert-manager
+        installCRDs: true
+        prometheus:
+          enabled: false #is true by default
+        livenessProbe:
+          enabled: true #is false by default
+        # image:
+        #   tag: v1.13.2
+        # ingressShim: {}
+        #   # defaultIssuerName: ""
+        #   # defaultIssuerKind: ""
+        #   # defaultIssuerGroup: ""
+        # nodeSelector.."kubernetes\.io/os"=linux (is the defaut already)
+
+  # target cluster / NS
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: cert-manager
+  syncPolicy:
+    automated: # automated sync by default retries failed attempts 5 times with following delays between attempts ( 5s, 10s, 20s, 40s, 80s ); retry controlled using `retry` field.
+      selfHeal: true # Specifies if partial app sync should be executed when resources are changed only in target Kubernetes cluster and no git change detected ( false by default ).
+      # prune: true # Specifies if resources should be pruned during auto-syncing ( false by default ).
+      # allowEmpty: false # Allows deleting all application resources during automatic syncing ( false by default ).
+    syncOptions: # Sync options which modifies sync behavior
+      - CreateNamespace=true # Namespace Auto-Creation ensures that namespace specified as the application destination exists in the destination cluster.
+      # - Validate=false # disables resource validation (equivalent to 'kubectl apply --validate=false') ( true by default ).
+      # - PrunePropagationPolicy=foreground # Supported policies are background, foreground and orphan.
+      # - PruneLast=true
+#
+# ########################################################### #
+# Next: we need to configure ClusterIssuer
+# see: ./cert-manager/config.yaml
+# ########################################################### #
+#

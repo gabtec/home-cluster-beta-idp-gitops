@@ -1,0 +1,84 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: argocd
+
+# additional resources like ingress rules, cluster and repository secrets.
+resources:
+  # - github.com/argoproj/argo-cd/manifests/cluster-install?ref=v1.0.1
+  # - clusters-secrets.yaml
+  # - repos-secrets.yaml
+  - ingress.yaml
+
+# --------------------------------------------------------- PATCHES ---
+# changes to config maps
+patches:
+  # - path: overlays/argo-cd-cm.yaml
+  - patch: |-
+      - op: add
+        path: /spec/template/spec/containers/0/args/-
+        value: --enable-ssl-passthrough
+    target:
+      group: apps
+      version: v1
+      kind: Deployment
+      labelSelector: "app.kubernetes.io/name=ingress-nginx"
+
+# --------------------------------------------------------- PATCHES ---
+configMapGenerator:
+  # how to track/sync CROSSPLANE resources
+  - behavior: merge
+    name: argocd-cm
+    literals:
+      - application.resourceTrackingMethod=annotation
+  # for argocd understand CRDs status
+  # docs: https://atlasgo.io/guides/deploying/k8s-argo#5-create-a-custom-health-check-for-atlas-objects
+  - behavior: merge
+    name: argocd-cm
+    literals:
+      - |
+        resource.customizations=db.atlasgo.io/AtlasMigration:
+          health.lua: |
+            hs = {}
+            if obj.status ~= nil then
+              if obj.status.conditions ~= nil then
+                for i, condition in ipairs(obj.status.conditions) do
+                  if condition.type == "Ready" and condition.status == "False" then
+                    hs.status = "Degraded"
+                    hs.message = condition.message
+                    return hs
+                  end
+                  if condition.type == "Ready" and condition.status == "True" then
+                    hs.status = "Healthy"
+                    hs.message = condition.message
+                    return hs
+                  end
+                end
+              end
+            end
+            hs.status = "Progressing"
+            hs.message = "Waiting for reconciliation"
+            return hs
+  # custom xgeeks crossplane compositions
+  - behavior: merge
+    name: argocd-cm
+    literals:
+      - |
+        resource.customizations=xgeeks.org/*:
+          health.lua: |
+            hs = {}
+            hs.status = "Progressing"
+            hs.message = "Waiting for reconciliation"
+
+            if obj.status ~= nil then
+              if obj.status.conditions ~= nil then
+                for i, condition in ipairs(obj.status.conditions) do
+                  if condition.type == "Ready" and condition.status == "True" and condition.reason == "Available" then
+                    hs.status = "Healthy"
+                    hs.message = condition.message
+                    return hs
+                  end
+                end
+              end
+            end
+            return hs

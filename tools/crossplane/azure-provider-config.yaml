@@ -1,0 +1,21 @@
+#
+# Create a SP first:
+# az ad sp create-for-rbac --name sp-idp-for-crossplane --sdk-auth --role Owner --scopes /subscriptions/<your-subs>
+#
+# Save your Azure JSON output as azure-credentials.json.
+#
+# kubectl create secret generic azure-creds-for-crossplane-secret -n crossplane-system --from-file=creds=./azure-credentials.json
+
+---
+apiVersion: azure.upbound.io/v1beta1
+kind: ProviderConfig
+metadata:
+  # using name=default, avoids having to ref it in crossplane manifests
+  name: default
+spec:
+  credentials:
+    source: Secret
+    secretRef:
+      namespace: crossplane-system
+      name: crossplane-azure-provider-secret
+      key: creds

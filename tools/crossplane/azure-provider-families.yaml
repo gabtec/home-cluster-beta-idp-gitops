@@ -1,0 +1,18 @@
+# LINK: https://marketplace.upbound.io/providers/upbound/provider-azure-dbforpostgresql/v0.35.0
+# Provides 11 CRD's
+#
+# THIS WILL ALSO install the "provider-family-azure" provider, that will handle the communication with kluster, using providerConfig
+# ---
+# apiVersion: pkg.crossplane.io/v1
+# kind: Provider
+# metadata:
+#   name: upbound-provider-family-azure
+# spec:
+#   package: xpkg.upbound.io/upbound/provider-family-azure:v0.36.0
+---
+apiVersion: pkg.crossplane.io/v1
+kind: Provider
+metadata:
+  name: provider-azure-dbforpostgresql
+spec:
+  package: xpkg.upbound.io/upbound/provider-azure-dbforpostgresql:v0.36.0

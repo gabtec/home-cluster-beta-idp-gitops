@@ -1,0 +1,57 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: tool-komoplane
+  namespace: argocd
+  labels:
+    group: tools
+  annotations:
+    argocd.argoproj.io/sync-options: Prune=false
+spec:
+  project: tools
+  # desired state at Git
+  source:
+    repoURL: https://helm-charts.komodor.io
+    chart: komoplane
+    targetRevision: 0.1.4 #0.0.7
+    helm:
+      releaseName: komoplane
+      parameters:
+        - name: "ingress.enabled"
+          value: "true"
+        - name: "ingress.className"
+          value: nginx
+        - name: ingress.annotations.nginx\.ingress\.kubernetes\.io/ssl-passthrough
+          value: '"true"'
+        - name: "ingress.hosts[0].host"
+          value: "xp.127.0.0.1.nip.io"
+        - name: "ingress.hosts[0].paths[0].path"
+          value: "/"
+        - name: "ingress.hosts[0].paths[0].pathType"
+          value: "ImplementationSpecific"
+
+    # valuesObject:
+    #   ingress:
+    #     enabled: true
+    #     path: /
+    #     hosts:
+    #       - xp.127.0.0.1.nip.io
+    #     annotations:
+    #       kubernetes.io/ingress.class: nginx
+    #       # kubernetes.io/tls-acme: "true"
+    #     labels: {}
+    #     tls: []
+  # target cluster / NS
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: tools # the app we are creating should not go to argocd namespace
+  syncPolicy:
+    automated: # automated sync by default retries failed attempts 5 times with following delays between attempts ( 5s, 10s, 20s, 40s, 80s ); retry controlled using `retry` field.
+      selfHeal: true # Specifies if partial app sync should be executed when resources are changed only in target Kubernetes cluster and no git change detected ( false by default ).
+      # prune: true # Specifies if resources should be pruned during auto-syncing ( false by default ).
+      # allowEmpty: false # Allows deleting all application resources during automatic syncing ( false by default ).
+    syncOptions: # Sync options which modifies sync behavior
+      - CreateNamespace=true # Namespace Auto-Creation ensures that namespace specified as the application destination exists in the destination cluster.
+      # - Validate=false # disables resource validation (equivalent to 'kubectl apply --validate=false') ( true by default ).
+      # - PrunePropagationPolicy=foreground # Supported policies are background, foreground and orphan.
+      # - PruneLast=true
