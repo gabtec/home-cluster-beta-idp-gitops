@@ -13,8 +13,8 @@ spec:
   # desired state at Git
   source:
     repoURL: https://charts.jetstack.io
-    chart: jetstack/cert-manager
-    targetRevision: 1.13.2 # chartVersion=appVersion
+    chart: cert-manager
+    targetRevision: 1.13.3 # chartVersion=appVersion
     helm:
       releaseName: cert-manager
       valuesObject:
