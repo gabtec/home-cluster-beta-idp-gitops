@@ -13,7 +13,7 @@ spec:
   source:
     repoURL: https://kubernetes.github.io/ingress-nginx
     chart: ingress-nginx
-    targetRevision: 4.9.1
+    targetRevision: 4.9.1 # eq v1.9.6 of ingress-nginx
     # chart: do-not-set-when-git-hosted-chart
     helm:
       releaseName: ingress-nginx

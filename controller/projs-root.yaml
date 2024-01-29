@@ -13,13 +13,13 @@ spec:
   destination:
     server: "https://kubernetes.default.svc"
     namespace: argocd
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-      allowEmpty: true
-    syncOptions:
-      - allowEmpty=true
+  # syncPolicy:
+  #   automated:
+  #     prune: true
+  #     selfHeal: true
+  #     allowEmpty: true
+  #   syncOptions:
+  #     - allowEmpty=true
 #   #
 #   ignoreDifferences:
 #     - group: argoproj.io

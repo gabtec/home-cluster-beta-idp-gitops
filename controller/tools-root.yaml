@@ -12,14 +12,14 @@ spec:
   project: tools
   source:
     repoURL: "https://github.com/gabtec/home-cluster-beta-idp-gitops.git"
-    path: tools/
-  syncPolicy:
-    automated:
-      allowEmpty: true
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - allowEmpty=true
+    path: tools
+  # syncPolicy:
+  #   automated:
+  #     allowEmpty: true
+  #     prune: true
+  #     selfHeal: true
+  #   syncOptions:
+  #     - allowEmpty=true
 #   #
 #   ignoreDifferences:
 #     - group: argoproj.io
