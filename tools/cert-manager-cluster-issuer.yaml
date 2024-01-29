@@ -32,4 +32,4 @@ spec:
             key: apiKey
         selector:
           dnsZones:
-            - "gabtec.pt"
+            - "gabtec.fun"
