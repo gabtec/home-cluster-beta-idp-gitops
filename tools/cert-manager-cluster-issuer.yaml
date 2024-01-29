@@ -5,14 +5,20 @@ metadata:
   namespace: cert-manager
 spec:
   acme:
+    # Email is the email address to be associated with the ACME account
+    email: correio.gab@gmail.com
+
     # The ACME server URL
     server: https://acme-v02.api.letsencrypt.org/directory
     # server: https://acme-staging-v02.api.letsencrypt.org/directory
-    # Email address used for ACME registration
-    email: correio.gab@gmail.com
-    # Name of a secret used to store the ACME account private key
+
+    # PrivateKey is the name of a Kubernetes Secret resource that will be used to store
+    # the automatically generated ACME account private key.
+    # Optionally, a key may be specified to select a specific entry within the named Secret resource.
+    # If key is not specified, a default of tls.key will be used.
     privateKeySecretRef:
       name: letsencrypt-prod # ---> this is what we will ref in app ingress annotations for cert-manager
+
     # Enable the HTTP-01 challenge provider
     solvers:
       - http01:
@@ -27,7 +33,8 @@ spec:
       - dns01:
         cloudflare:
           email: correio.gab@gmail.com
-          apiTokenSecretRef:
+          # apiTokenSecretRef:
+          apiKeySecretRef:
             name: cf-api-key-secret
             key: apiKey
         selector:
