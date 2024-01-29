@@ -12,7 +12,7 @@ spec:
   project: tools
   source:
     repoURL: "https://github.com/gabtec/home-cluster-beta-idp-gitops.git"
-    path: tools/**/*
+    path: tools/
   syncPolicy:
     automated:
       allowEmpty: true
