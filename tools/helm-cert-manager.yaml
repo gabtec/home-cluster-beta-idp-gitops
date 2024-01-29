@@ -26,10 +26,10 @@ spec:
           enabled: true #is false by default
         # image:
         #   tag: v1.13.2
-        # ingressShim: {}
-        #   # defaultIssuerName: ""
-        #   # defaultIssuerKind: ""
-        #   # defaultIssuerGroup: ""
+        ingressShim:
+          defaultIssuerName: "letsencrypt-prod"
+          defaultIssuerKind: "ClusterIssuer"
+          defaultIssuerGroup: "cert-manager.io"
         # nodeSelector.."kubernetes\.io/os"=linux (is the defaut already)
 
   # target cluster / NS
