@@ -1,15 +1,16 @@
 # #################################### #
 #     Cloufdflare API Token Secret
 # #################################### #
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: cf-api-key-secret
-  namespace: cert-manager #default
-type: Opaque
-stringData:
-  apiKey: 444cdd53ef0a30df6cbb8fe096de6f1a96806
+# ---
+###### --- this is created by gitops-bridge script -----
+# apiVersion: v1
+# kind: Secret
+# metadata:
+#   name: cf-api-key-secret
+#   namespace: cert-manager #default
+# type: Opaque
+# stringData:
+#   apiKey: abcde
 
 # #################################### #
 #        Cluster Issuer
@@ -50,4 +51,4 @@ spec:
         # atention: the nest is on same level as dns01:
         selector:
           dnsZones:
-            - "gabtec.fun"
+            - "gabtec.pt"
