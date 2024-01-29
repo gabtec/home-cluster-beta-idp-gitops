@@ -1,7 +1,7 @@
 apiVersion: clustersecret.io/v1
 kind: ClusterSecret
 metadata:
-  name: regcred-ghcr-io-secret # it can have the same name of the referenced secret
+  name: regcred-ghcr-io-ns-replicator # it can have the same name of the referenced secret
   namespace: clustersecret
   # can not use finalizer - it keeps sync-unsync loop ???
 type: kubernetes.io/dockerconfigjson
