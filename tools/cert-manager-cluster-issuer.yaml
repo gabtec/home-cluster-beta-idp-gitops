@@ -15,14 +15,18 @@ spec:
       name: letsencrypt-prod # ---> this is what we will ref in app ingress annotations for cert-manager
     # Enable the HTTP-01 challenge provider
     solvers:
-      # - http01:
-      #     ingress:
-      #       ingressClassName: nginx
-      #   selector:
-      #     dnsNames: # because this challenge do not allow wildcard subdomains
-      #       - "demo.gabtec.pt"
+      - http01:
+          ingress:
+            ingressClassName: nginx
+        selector:
+          matchLabels:
+            "use-http01-solver": "true"
+        # selector:
+        #   dnsNames: # because this challenge do not allow wildcard subdomains
+        #     - "demo.gabtec.pt"
       - dns01:
         cloudflare:
+          email: correio.gab@gmail.com
           apiTokenSecretRef:
             name: cf-api-key-secret
             key: apiKey
