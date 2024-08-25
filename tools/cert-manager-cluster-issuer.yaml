@@ -31,13 +31,12 @@ spec:
         #   dnsNames: # because this challenge do not allow wildcard subdomains
         #     - "demo.gabtec.pt"
       - dns01:
-        cloudflare:
-          email: correio.gab@gmail.com
-          # apiTokenSecretRef:
-          apiKeySecretRef:
-            name: cf-api-key-secret
-            key: apiKey
+          cloudflare:
+            apiKeySecretRef:
+              key: apiKey
+              name: cf-secret
+            email: correio.gab@gmail.com
         selector:
           dnsZones:
-            - "gabtec.pt"
-            - "gabtec.online"
+            - gabtec.online
+            - gabtec.pt
